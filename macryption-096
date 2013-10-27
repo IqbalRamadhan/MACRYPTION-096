@@ -1,0 +1,96 @@
+<html>
+<head>
+<title>MACRYPTION-096</title>
+
+<!--++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+						MACRYPTION-096
+					Created by : @m3111096
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+<script type="text/javascript">
+	function kosong(){
+     	document.getElementById('mac').value = "";
+	};
+	function kosongkan(){
+		document.getElementById('kata').value = "";
+     	document.getElementById('mac').value = "";
+	};
+</script>
+
+<?php
+error_reporting(0);
+$mode=$_REQUEST['but'];
+$teks=$_REQUEST['kata'];
+$key=$_REQUEST['mac'];
+if($mode=='enkrip'){
+	$kata=explode(" ", $teks);
+	for ($i=0; $i < count($kata) ; $i++) {
+		$huruf[$i]=str_split($kata[$i],1);
+		for ($q=0; $q < strlen($kata[$i]) ; $q++) { 
+			$n[$i]=$n[$i] + ord($huruf[$i][$q]);
+		}
+		$mac[$i]=(ord($n[$i])%90)+64;
+		$tmac[$i]=chr($mac[$i]);
+		$key = $key . $tmac[$i];
+	}
+	for ($b=0; $b < count($kata); $b++) { 
+		for ($a=0; $a < strlen($kata[$b]); $a++) {
+			for ($l=0; $l < count($kata) ; $l++) {				
+				if ($a % count($kata) == $l) {
+					$hkey[$b][$a]=(ord($huruf[$b][$a])+$mac[$l])%256;	
+				}
+			}	
+			$enkata[$b]=$enkata[$b] . chr($hkey[$b][$a]);
+		}
+	}
+	$enteks=implode(" ", $enkata);
+}elseif ($mode=="dekrip") {
+	$kata=explode(" ", $teks);
+	$kunci=str_split($key,1);
+	for ($i=0; $i < count($kata); $i++) { 
+		$huruf[$i]=str_split($kata[$i],1);
+		$mac[$i]=ord($kunci[$i]);
+	}
+	for ($j=0; $j < count($kata); $j++) { 
+		for ($k=0; $k < strlen($kata[$j]); $k++) {
+			for ($t=0; $t < count($kata) ; $t++) {				
+				if ($k % count($kata) == $t) {
+					$hkey[$j][$k]=(ord($huruf[$j][$k])-$mac[$t])%256;	
+				}
+			}
+			$dekata[$j]=$dekata[$j] . chr($hkey[$j][$k]);
+		}
+	}
+	$deteks=implode(" ", $dekata);
+}
+?>
+</head>
+
+<body>
+<form action="" method="post">
+<textarea rows="5" cols="30" placeholder="Plainteks" id="kata" name="kata" /><?php if($mode=="enkrip"){echo$enteks;}elseif($mode=="dekrip"){echo$teks;} ?></textarea><br>
+<textarea rows="1" cols="10" placeholder="MAC" id="mac" name="mac" /><?php echo$key; ?></textarea><br>
+<input type="submit" value="enkrip" name="but" onClick="kosong();">
+<input type="submit" value="dekrip" name="but" >
+<input type="submit" value="kosongkan" name="but" onClick="kosongkan();">
+</form>
+
+<?php
+if ($mode=="enkrip") {
+	echo"MAC dari Plainteks $teks adalah $key </br>";
+	echo"hasil enkripsi = $enteks </br></br>";
+}elseif ($mode=="dekrip") {
+	echo"Teks asli dari $teks adalah $deteks </br></br></br>";
+}else{
+	echo"</br></br></br>";
+}
+$MAC="13 10 99 114 101 97 116 101 100 32 98 121 32 58 32 64 109 51 49 49 49 48 57 54 157 32 45 45 45 32 58 51";
+$DEMAC=explode(" ", $MAC);
+for ($i=0; $i < strlen($MAC); $i++) { 
+	echo chr($DEMAC[$i]);
+}
+?>
+
+</body>
+</html>
+<!-- <== look 96 row!! :3 --> 
